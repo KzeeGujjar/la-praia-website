@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# La Praia — Website
+
+Frontend-only website for **Ristorante Pizzeria La Praia** (Via Camillo Casarini 10, Bologna), built with Next.js and Tailwind CSS. No backend, database, auth, or payments — all content is static/local data.
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Other commands:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build   # production build
+npm run start   # serve the production build
+npm run lint    # eslint
+```
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  app/
+    page.tsx            # Home
+    menu/page.tsx        # Full bilingual menu
+    about/page.tsx        # Our story
+    contact/page.tsx      # Reservations / hours / map
+    layout.tsx            # Fonts, <html lang>, Header/Footer shell
+    globals.css            # Tailwind v4 theme tokens (colors, fonts)
+  components/            # Header, Footer, LanguageToggle, ContactButtons,
+                           # MenuItemRow, MapEmbed, PhotoPlaceholder, WaveDivider
+  data/
+    business.ts            # Address, phone, hours, delivery zones, map links
+    menu.ts                 # Full menu (all categories/items/prices)
+  lib/
+    language-context.tsx    # IT/EN toggle (React context + localStorage)
+    i18n/dictionary.ts      # All UI copy, in Italian and English
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Content & Language
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Italian is the default language; English is available via the IT/EN toggle in the header (persisted in `localStorage`).
+- Menu item names stay in Italian (the real menu names); ingredient descriptions and category labels translate.
+- All business data (menu, prices, hours, address, phone) lives in `src/data/` — update those files directly to change content, no code changes needed elsewhere.
 
-## Deploy on Vercel
+## No Backend, By Design
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This is a static frontend: no auth, no database, no server actions, no payment processing. "Reservations" and ordering are handled via `tel:` and WhatsApp (`wa.me`) links to the restaurant's real phone number — there is no online booking system. The project structure (data separated from presentation) makes it straightforward to add a real backend later if needed.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Photography
+
+No stock photos are used. Sections that would normally show food/interior photography currently render a styled placeholder (`PhotoPlaceholder` component) — swap these for real photos via `next/image` once available.
+
+## Verify Before Publishing
+
+Menu prices, hours, and the phone number were sourced from the restaurant's public listings and are believed accurate as of writing, but should be confirmed with the restaurant before this goes live.

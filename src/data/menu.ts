@@ -1,0 +1,325 @@
+/**
+ * Static menu data for La Praia, transcribed from the restaurant's published
+ * menu. No backend — this is the single source of truth for menu content.
+ * Item names stay in Italian (the real menu names); descriptions are given
+ * in both languages. Update prices here if the restaurant changes them.
+ */
+
+export type MenuItem = {
+  name: string;
+  descriptionIt?: string;
+  descriptionEn?: string;
+  price: number;
+  glutenFree?: boolean;
+};
+
+export type MenuCategory = {
+  id: string;
+  nameIt: string;
+  nameEn: string;
+  items: MenuItem[];
+};
+
+export const menu: MenuCategory[] = [
+  {
+    id: "pizze",
+    nameIt: "Pizze",
+    nameEn: "Pizzas",
+    items: [
+      { name: "Marinara", descriptionIt: "Pomodoro, aglio e origano", descriptionEn: "Tomato, garlic, oregano", price: 4.5 },
+      { name: "Margherita", descriptionIt: "Pomodoro e mozzarella", descriptionEn: "Tomato, mozzarella", price: 6.0 },
+      { name: "Ischia", descriptionIt: "Mozzarella e grana", descriptionEn: "Mozzarella, grana cheese", price: 5.5 },
+      { name: "Grana", descriptionIt: "Pomodoro, mozzarella e grana a scaglie", descriptionEn: "Tomato, mozzarella, shaved grana cheese", price: 6.0 },
+      { name: "Funghi", descriptionIt: "Pomodoro, mozzarella e funghi", descriptionEn: "Tomato, mozzarella, mushrooms", price: 6.5 },
+      { name: "Tonno", descriptionIt: "Pomodoro, mozzarella e tonno", descriptionEn: "Tomato, mozzarella, tuna", price: 6.5 },
+      { name: "Salsiccia", descriptionIt: "Pomodoro, mozzarella e salsiccia", descriptionEn: "Tomato, mozzarella, sausage", price: 7.0 },
+      { name: "Napoli", descriptionIt: "Pomodoro, mozzarella, acciughe e origano", descriptionEn: "Tomato, mozzarella, anchovies, oregano", price: 7.0 },
+      { name: "Prosciutto Cotto", descriptionIt: "Pomodoro, mozzarella e prosciutto cotto", descriptionEn: "Tomato, mozzarella, cooked ham", price: 7.0 },
+      { name: "Würstel", descriptionIt: "Pomodoro, mozzarella e würstel", descriptionEn: "Tomato, mozzarella, frankfurter sausage", price: 7.0 },
+      { name: "Cipolla", descriptionIt: "Pomodoro, mozzarella e cipolla", descriptionEn: "Tomato, mozzarella, onion", price: 7.0 },
+      { name: "Rucola", descriptionIt: "Pomodoro, mozzarella e rucola", descriptionEn: "Tomato, mozzarella, arugula", price: 7.0 },
+      { name: "Carciofi", descriptionIt: "Pomodoro, mozzarella e carciofi", descriptionEn: "Tomato, mozzarella, artichokes", price: 7.0 },
+      { name: "Patatine Fritte", descriptionIt: "Pomodoro, mozzarella, patatine fritte", descriptionEn: "Tomato, mozzarella, French fries", price: 7.0 },
+      { name: "Prosciutto Cotto e Salsiccia", descriptionIt: "Pomodoro, mozzarella, prosciutto cotto e salsiccia", descriptionEn: "Tomato, mozzarella, cooked ham, sausage", price: 7.5 },
+      { name: "Tonno e Cipolla", descriptionIt: "Pomodoro, mozzarella, tonno e cipolla", descriptionEn: "Tomato, mozzarella, tuna, onion", price: 7.5 },
+      { name: "Prosciutto e Funghi", descriptionIt: "Pomodoro, mozzarella, prosciutto cotto e funghi", descriptionEn: "Tomato, mozzarella, cooked ham, mushrooms", price: 7.5 },
+      { name: "Prosciutto Cotto e Carciofi", descriptionIt: "Pomodoro, mozzarella, prosciutto cotto e carciofi", descriptionEn: "Tomato, mozzarella, cooked ham, artichokes", price: 7.5 },
+      { name: "Funghi e Salsiccia", descriptionIt: "Pomodoro, mozzarella, funghi e salsiccia", descriptionEn: "Tomato, mozzarella, mushrooms, sausage", price: 7.5 },
+      { name: "Melanzane Griglia", descriptionIt: "Pomodoro, mozzarella e melanzane griglia", descriptionEn: "Tomato, mozzarella, grilled eggplant", price: 7.5 },
+      { name: "Carciofi e Salsiccia", descriptionIt: "Pomodoro, mozzarella, carciofi e salsiccia", descriptionEn: "Tomato, mozzarella, artichokes, sausage", price: 7.5 },
+      { name: "Siciliana", descriptionIt: "Pomodoro, acciughe, capperi, olive e origano", descriptionEn: "Tomato, anchovies, capers, olives, oregano", price: 7.5 },
+      { name: "Zucchine Griglia", descriptionIt: "Pomodoro, mozzarella e zucchine griglia", descriptionEn: "Tomato, mozzarella, grilled zucchini", price: 7.5 },
+      { name: "Bufala", descriptionIt: "Pomodoro e mozzarella di bufala", descriptionEn: "Tomato, buffalo mozzarella", price: 7.5 },
+      { name: "Diavola", descriptionIt: "Pomodoro, mozzarella e salame piccante", descriptionEn: "Tomato, mozzarella, spicy salami", price: 7.5 },
+      { name: "Romana", descriptionIt: "Pomodoro, mozzarella, acciughe, capperi e origano", descriptionEn: "Tomato, mozzarella, anchovies, capers, oregano", price: 7.5 },
+      { name: "Vegetariana", descriptionIt: "Pomodoro, mozzarella e verdure miste", descriptionEn: "Tomato, mozzarella, mixed vegetables", price: 8.0 },
+      { name: "Saracena", descriptionIt: "Mozzarella di bufala e pomodorini", descriptionEn: "Buffalo mozzarella, cherry tomatoes", price: 8.0 },
+      { name: "4 Stagioni", descriptionIt: "Pomodoro, mozzarella, prosciutto cotto, funghi, salsiccia, carciofi", descriptionEn: "Tomato, mozzarella, cooked ham, mushrooms, sausage, artichokes", price: 8.0 },
+      { name: "Speck e Gorgonzola", descriptionIt: "Pomodoro, mozzarella, speck e gorgonzola", descriptionEn: "Tomato, mozzarella, speck, gorgonzola", price: 8.5 },
+      { name: "Crudo", descriptionIt: "Pomodoro, mozzarella e prosciutto crudo di Parma", descriptionEn: "Tomato, mozzarella, Parma cured ham", price: 8.5 },
+      { name: "Funghi Porcini", descriptionIt: "Pomodoro, mozzarella e funghi porcini", descriptionEn: "Tomato, mozzarella, porcini mushrooms", price: 9.0 },
+      { name: "4 Formaggi", descriptionIt: "Pomodoro, mozzarella, fontina, brie e gorgonzola", descriptionEn: "Tomato, mozzarella, fontina, brie, gorgonzola", price: 8.0 },
+      { name: "Capricciosa", descriptionIt: "Pomodoro, mozzarella, prosciutto cotto, salsiccia, funghi e carciofi", descriptionEn: "Tomato, mozzarella, cooked ham, sausage, mushrooms, artichokes", price: 8.0 },
+      { name: "Frutti di Mare", descriptionIt: "Pomodoro e insalata di mare", descriptionEn: "Tomato, seafood salad", price: 9.5 },
+    ],
+  },
+  {
+    id: "pizze-speciali",
+    nameIt: "Pizze Speciali",
+    nameEn: "Specialty Pizzas",
+    items: [
+      { name: "Trevigiana", descriptionIt: "Pomodoro, mozzarella, radicchio, gorgonzola, pancetta", descriptionEn: "Tomato, mozzarella, radicchio, gorgonzola, pancetta", price: 8.5 },
+      { name: "Mortazza", descriptionIt: "Base bianca, mortadella, crema di pistacchio, granella di pistacchio e stracciatella", descriptionEn: "No-tomato base, mortadella, pistachio cream, chopped pistachio, stracciatella cheese", price: 11.0 },
+      { name: "Golosona", descriptionIt: "Pomodoro, mozzarella, pomodorini, speck, scamorza affumicata", descriptionEn: "Tomato, mozzarella, cherry tomatoes, speck, smoked scamorza", price: 9.0 },
+      { name: "Tedesca", descriptionIt: "Pomodoro, mozzarella, salsiccia, patate al forno e rosmarino", descriptionEn: "Tomato, mozzarella, sausage, baked potatoes, rosemary", price: 8.0 },
+      { name: "Bomba", descriptionIt: "Mozzarella, patate al forno, salsiccia, cipolla, grana a scaglie", descriptionEn: "Mozzarella, baked potatoes, sausage, onion, shaved grana", price: 9.5 },
+      { name: "Parmigiana", descriptionIt: "Pomodoro, mozzarella, melanzane fritte, basilico e parmigiano reggiano", descriptionEn: "Tomato, mozzarella, fried eggplant, basil, parmigiano reggiano", price: 8.5 },
+      { name: "Maiori", descriptionIt: "Pomodoro, mozzarella, broccoli e salsiccia", descriptionEn: "Tomato, mozzarella, broccoli, sausage", price: 8.0 },
+      { name: "Gustosa", descriptionIt: "Mozzarella, salsiccia, gorgonzola, patate al forno", descriptionEn: "Mozzarella, sausage, gorgonzola, baked potatoes", price: 8.5 },
+      { name: "Bolognese", descriptionIt: "Mozzarella, pomodorini, salsiccia e panna", descriptionEn: "Mozzarella, cherry tomatoes, sausage, cream", price: 7.5 },
+      { name: "Calabrese", descriptionIt: "Pomodoro, mozzarella, salame piccante, grana, rucola, olive, origano", descriptionEn: "Tomato, mozzarella, spicy salami, grana, arugula, olives, oregano", price: 9.0 },
+      { name: "Nord e Sud", descriptionIt: "Mozzarella, nduja, gorgonzola", descriptionEn: "Mozzarella, nduja (spicy spreadable salami), gorgonzola", price: 8.0 },
+      { name: "Diablo", descriptionIt: "Pomodoro, mozzarella, salame piccante, cipolla, scaglie di grana", descriptionEn: "Tomato, mozzarella, spicy salami, onion, shaved grana", price: 9.0 },
+      { name: "Turista", descriptionIt: "Pomodoro, mozzarella, cipolla, peperoni, patate al forno, salsiccia", descriptionEn: "Tomato, mozzarella, onion, peppers, baked potatoes, sausage", price: 9.5 },
+      { name: "Carbonara", descriptionIt: "Pomodoro, mozzarella, pancetta, uovo, pecorino, pepe", descriptionEn: "Tomato, mozzarella, pancetta, egg, pecorino, pepper", price: 9.0 },
+      { name: "Amatriciana", descriptionIt: "Pomodoro, mozzarella, pancetta, cipolla, aglio", descriptionEn: "Tomato, mozzarella, pancetta, onion, garlic", price: 8.5 },
+      { name: "Positano", descriptionIt: "Pomodoro, mozzarella, würstel e patatine fritte", descriptionEn: "Tomato, mozzarella, frankfurter, French fries", price: 8.0 },
+      { name: "Poker", descriptionIt: "Pomodoro, mozzarella, gorgonzola, salame piccante, funghi porcini", descriptionEn: "Tomato, mozzarella, gorgonzola, spicy salami, porcini", price: 10.0 },
+      { name: "Costiera", descriptionIt: "Pomodoro, mozzarella, zenzero, limone e prosciutto crudo", descriptionEn: "Tomato, mozzarella, ginger, lemon, cured ham", price: 8.0 },
+      { name: "Atrani", descriptionIt: "Pomodoro, mozzarella, brie, gorgonzola, grana e radicchio", descriptionEn: "Tomato, mozzarella, brie, gorgonzola, grana, radicchio", price: 8.0 },
+      { name: "Praia", descriptionIt: "Mozzarella, gorgonzola e friarielli", descriptionEn: "Mozzarella, gorgonzola, friarielli (broccoli rabe)", price: 8.0 },
+      { name: "Ravello", descriptionIt: "Mozzarella, scamorza e friarielli", descriptionEn: "Mozzarella, scamorza, friarielli", price: 8.0 },
+      { name: "Campana", descriptionIt: "Pomodoro, mozzarella di bufala, olio tartufato", descriptionEn: "Tomato, buffalo mozzarella, truffle oil", price: 7.5 },
+      { name: "Amalfi", descriptionIt: "Pomodoro, mozzarella, prosciutto cotto e frittura di calamari", descriptionEn: "Tomato, mozzarella, cooked ham, fried calamari", price: 9.5 },
+      { name: "Tramonti", descriptionIt: "Pomodoro, mozzarella, salsiccia e friarielli", descriptionEn: "Tomato, mozzarella, sausage, friarielli", price: 8.0 },
+    ],
+  },
+  {
+    id: "piade-salate",
+    nameIt: "Piade di Pizza",
+    nameEn: "Savory Flatbreads",
+    items: [
+      { name: "Piadina", descriptionIt: "Sale, olio, rosmarino", descriptionEn: "Salt, oil, rosemary", price: 2.5 },
+      { name: "Piada Pomodorini, Prosciutto Crudo, Rucola, Mozzarella di Bufala", descriptionEn: "Cherry tomatoes, cured ham, arugula, buffalo mozzarella", price: 9.5 },
+      { name: "Piada Pomodorini, Bufala, Grana", descriptionEn: "Cherry tomatoes, buffalo mozzarella, grana", price: 8.5 },
+      { name: "Piada Bresaola, Rucola, Mozzarella di Bufala, Grana", descriptionEn: "Bresaola, arugula, buffalo mozzarella, grana", price: 9.5 },
+    ],
+  },
+  {
+    id: "piade-dolci",
+    nameIt: "Piade di Pizza Dolci",
+    nameEn: "Sweet Flatbreads",
+    items: [
+      { name: "Piadina con Nutella", descriptionIt: "Nutella Ferrero", descriptionEn: "With Nutella", price: 6.0 },
+      { name: "Piadina con Nutella e Noci", descriptionEn: "With Nutella and walnuts", price: 7.5 },
+    ],
+  },
+  {
+    id: "calzoni",
+    nameIt: "I Calzoni",
+    nameEn: "Calzones",
+    items: [
+      { name: "Calzone Classico", descriptionIt: "Pomodoro, mozzarella, prosciutto cotto", descriptionEn: "Tomato, mozzarella, cooked ham", price: 7.0 },
+      { name: "Calzone Farcito", descriptionIt: "Pomodoro, mozzarella, funghi, prosciutto cotto, carciofi", descriptionEn: "Tomato, mozzarella, mushrooms, cooked ham, artichokes", price: 9.5 },
+    ],
+  },
+  {
+    id: "antipasti-di-mare",
+    nameIt: "Antipasti di Mare",
+    nameEn: "Seafood Starters",
+    items: [
+      { name: "Cozze alla Catalana", descriptionIt: "Aglio, olio, cozze, cipolla di Tropea all'aceto, pomodorini", descriptionEn: "Garlic, oil, mussels, pickled Tropea onion, cherry tomatoes", price: 13.0 },
+      { name: "Zuppa di Cozze Piccanti", descriptionIt: "Aglio, olio, peperoncino, pomodoro, cozze", descriptionEn: "Garlic, oil, chili, tomato, mussels", price: 13.0 },
+      { name: "Sautè di Cozze e Vongole", descriptionIt: "Aglio, olio, cozze, vongole", descriptionEn: "Garlic, oil, mussels, clams", price: 15.0 },
+      { name: "Gran Misto di Pesce Caldo", descriptionIt: "Sautè, cozze, vongole, calamari, gamberetti, sale, olio, limone", descriptionEn: "Mixed hot seafood: mussels, clams, squid, shrimp, salt, oil, lemon", price: 16.0 },
+      { name: "Carpaccio di Polpo con Spremuta di Limone d'Amalfi", descriptionIt: "Sale, olio, limone", descriptionEn: "Octopus carpaccio, salt, oil, lemon", price: 13.0 },
+    ],
+  },
+  {
+    id: "primi-di-mare",
+    nameIt: "Primi di Mare",
+    nameEn: "Seafood First Courses",
+    items: [
+      { name: "Scialatielli ai Frutti di Mare", descriptionIt: "Aglio, olio, pomodoro, vongole, cozze, gamberetti, calamari", descriptionEn: "Garlic, oil, tomato, clams, mussels, shrimp, squid", price: 16.0 },
+      { name: "Ravioli Ripieni di Branzino con Gamberetti e Limone", descriptionIt: "Aglio, olio, gamberetti, pomodorini, limone", descriptionEn: "Sea bass–stuffed ravioli, garlic, oil, shrimp, cherry tomatoes, lemon", price: 14.5 },
+      { name: "Spaghetti alla Don Alfonso", descriptionIt: "Aglio, olio, pomodoro, acciughe salate", descriptionEn: "Garlic, oil, tomato, salted anchovies", price: 11.0 },
+      { name: "Risotto alla Marinara", descriptionIt: "Aglio, olio, pomodoro, cozze, vongole, calamari, gamberetti", descriptionEn: "Garlic, oil, tomato, mussels, clams, squid, shrimp", price: 16.0 },
+      { name: "Spaghetti allo Scoglio", descriptionIt: "Aglio, olio, pomodoro, cozze, vongole, gamberetti, calamari", descriptionEn: "Garlic, oil, tomato, mussels, clams, shrimp, squid", price: 16.0 },
+      { name: "Tagliatelle con Gamberetti, Funghi Porcini e Olio Tartufato", descriptionEn: "Shrimp, porcini mushrooms, truffle oil", price: 15.0 },
+      { name: "Scialatielli ai Frutti di Mare con Scamorza e Pecorino", descriptionEn: "Seafood scialatielli with smoked scamorza and pecorino", price: 16.5 },
+      { name: "Spaghetti alle Vongole", descriptionIt: "Aglio, olio, vongole, prezzemolo", descriptionEn: "Garlic, oil, clams, parsley", price: 14.0 },
+      { name: "Tagliatelle al Salmone", descriptionIt: "Panna, pomodoro, salmone affumicato", descriptionEn: "Cream, tomato, smoked salmon", price: 13.0 },
+      { name: "Gnocchi alla Praia con Vongole e Gamberetti", descriptionIt: "Aglio, olio, vongole, gamberetti, rucola", descriptionEn: "Garlic, oil, clams, shrimp, arugula", price: 15.0 },
+      { name: "Calamarata con Gamberi e Melanzane", descriptionIt: "Aglio, olio, pomodoro, gamberetti, melanzane fritte", descriptionEn: "Garlic, oil, tomato, shrimp, fried eggplant", price: 15.0 },
+      { name: "Calamarata con Vongole e Friarielli", descriptionIt: "Aglio, olio, vongole, friarielli", descriptionEn: "Garlic, oil, clams, broccoli rabe", price: 15.0 },
+      { name: "Paccheri con Totani e Pecorino", descriptionIt: "Aglio, olio, pomodoro, totani, pecorino", descriptionEn: "Garlic, oil, tomato, flying squid, pecorino", price: 15.0 },
+    ],
+  },
+  {
+    id: "secondi-di-mare",
+    nameIt: "Secondi di Mare",
+    nameEn: "Seafood Mains",
+    items: [
+      { name: "Zuppa di Pesce con Crostini", descriptionIt: "Scampi, gamberoni, cozze, vongole, gamberetti, pescato del giorno (gallinella, scorfano)", descriptionEn: "Fish soup with croutons: langoustine, prawns, mussels, clams, shrimp, catch of the day", price: 41.0 },
+      { name: "Orata alla Griglia", descriptionEn: "Grilled sea bream", price: 15.0 },
+      { name: "Branzino con Crema di Limone e Menta", descriptionIt: "Panna, limone, menta", descriptionEn: "Sea bass with lemon-mint cream", price: 17.0 },
+      { name: "Pesce Spada alla Siciliana", descriptionIt: "Aglio, olio, pomodoro, capperi, olive", descriptionEn: "Swordfish, Sicilian style", price: 15.0 },
+      { name: "Orata con le Verdure", descriptionIt: "Zucchine, cipolla, carote, sedano, olio, vino bianco", descriptionEn: "Sea bream with vegetables", price: 17.0 },
+      { name: "Branzino alla Griglia", descriptionEn: "Grilled sea bass", price: 15.0 },
+      { name: "Pesce Spada alla Griglia", descriptionEn: "Grilled swordfish", price: 13.0 },
+      { name: "Sogliola alla Griglia", descriptionEn: "Grilled sole", price: 12.0 },
+    ],
+  },
+  {
+    id: "antipasti-di-terra",
+    nameIt: "Antipasti di Terra",
+    nameEn: "Land Starters",
+    items: [
+      { name: "Affettato Misto", descriptionIt: "Salame, pancetta, mortadella, bresaola, prosciutto crudo, salame piccante", descriptionEn: "Mixed cured meats", price: 11.0 },
+      { name: "Prosciutto di Parma e Mozzarella di Bufala di Battipaglia", descriptionEn: "Parma ham and buffalo mozzarella", price: 14.0 },
+      { name: "Mozzarella di Bufala Fresca di Battipaglia con Pomodorini Pachino", descriptionEn: "Fresh buffalo mozzarella with Pachino cherry tomatoes", price: 13.0 },
+      { name: "Mozzarella di Bufala di Battipaglia", descriptionEn: "Buffalo mozzarella", price: 11.0 },
+    ],
+  },
+  {
+    id: "primi-di-terra",
+    nameIt: "Primi di Terra",
+    nameEn: "Land First Courses",
+    items: [
+      { name: "Gnocchi di Patate con Provola Affumicata", descriptionIt: "Aglio, olio, pomodoro, provola affumicata", descriptionEn: "Potato gnocchi with smoked provola", price: 12.0 },
+      { name: "Paccheri della Nonna", descriptionIt: "Aglio, olio, mozzarella, melanzane fritte e pomodoro", descriptionEn: "\"Grandma's\" paccheri: garlic, oil, mozzarella, fried eggplant, tomato", price: 13.0 },
+      { name: "Spaghetti alla Carbonara", descriptionIt: "Olio, pancetta, uovo, pecorino", descriptionEn: "Oil, pancetta, egg, pecorino", price: 11.0 },
+      { name: "Penne all'Arrabbiata", descriptionIt: "Aglio, olio, pomodoro, peperoncino", descriptionEn: "Garlic, oil, tomato, chili", price: 11.0 },
+      { name: "Tagliatelle alla Bolognese", descriptionIt: "Ragù alla bolognese", descriptionEn: "Classic Bolognese ragù", price: 12.0 },
+      { name: "Tortellini con Panna e Prosciutto", descriptionIt: "Panna, prosciutto", descriptionEn: "Cream, ham", price: 12.0 },
+    ],
+  },
+  {
+    id: "secondi-di-terra",
+    nameIt: "Secondi di Terra",
+    nameEn: "Meat Mains",
+    items: [
+      { name: "Filetto all'Aceto Balsamico", descriptionIt: "Olio, aceto balsamico", descriptionEn: "Beef fillet with balsamic vinegar", price: 26.0 },
+      { name: "Filetto con Broccoli Piccanti", descriptionIt: "Aglio, olio, peperoncino, broccoli", descriptionEn: "Beef fillet with spicy broccoli", price: 26.0 },
+      { name: "Scaloppina al Vino Bianco", descriptionIt: "Carne di maiale, vino bianco, sale, farina", descriptionEn: "Pork scaloppine, white wine", price: 11.0 },
+      { name: "Scaloppina al Limone", descriptionIt: "Carne di maiale, succo di limone, sale, farina", descriptionEn: "Pork scaloppine, lemon", price: 11.0 },
+      { name: "Bistecca di Manzo", descriptionIt: "Grigliata", descriptionEn: "Grilled beef steak", price: 12.0 },
+      { name: "Filetto al Pepe Verde", descriptionIt: "Olio, pepe verde, brandy, panna, senape", descriptionEn: "Beef fillet, green pepper sauce", price: 29.0 },
+      { name: "Costata Senza Osso", descriptionIt: "Grigliata", descriptionEn: "Grilled boneless rib steak", price: 21.0 },
+      { name: "Filetto alla Griglia", descriptionEn: "Grilled beef fillet", price: 21.0 },
+      { name: "Braciola di Maiale", descriptionIt: "Grigliata", descriptionEn: "Grilled pork chop", price: 11.0 },
+      { name: "Tagliata di Manzo", descriptionIt: "Sale, olio", descriptionEn: "Sliced grilled beef, salt and oil", price: 21.0 },
+    ],
+  },
+  {
+    id: "fritti",
+    nameIt: "Fritti",
+    nameEn: "Fried",
+    items: [
+      { name: "Fritto Misto di Pesce", descriptionIt: "Gamberetti, calamari", descriptionEn: "Mixed fried seafood: shrimp, squid", price: 15.0 },
+      { name: "Patatine Fritte", descriptionEn: "French fries", price: 5.0 },
+    ],
+  },
+  {
+    id: "contorni",
+    nameIt: "Contorni",
+    nameEn: "Side Dishes",
+    items: [
+      { name: "Parmigiana di Melanzane", descriptionIt: "Pomodoro, mozzarella, melanzane, basilico", descriptionEn: "Eggplant parmigiana", price: 9.0 },
+      { name: "Verdure Lesse", descriptionIt: "Patate, spinaci, fagiolini, broccoli", descriptionEn: "Boiled vegetables", price: 5.5 },
+      { name: "Verdure alla Griglia", descriptionIt: "Melanzane, zucchine, radicchio", descriptionEn: "Grilled vegetables", price: 5.5 },
+    ],
+  },
+  {
+    id: "insalate",
+    nameIt: "Insalate",
+    nameEn: "Salads",
+    items: [
+      { name: "Rughetta e Pomodorini di Pachino", descriptionEn: "Arugula and Pachino cherry tomatoes", price: 5.0 },
+      { name: "Insalata Mista", descriptionIt: "Insalata verde, pomodorini, carote, zucchine, radicchio", descriptionEn: "Mixed green salad", price: 5.0 },
+      { name: "Insalatone", descriptionIt: "Insalata verde, radicchio, tonno, mozzarella, pomodorini, zucchine, carota", descriptionEn: "Big salad with tuna and mozzarella", price: 7.0 },
+    ],
+  },
+  {
+    id: "dolci",
+    nameIt: "Dolci",
+    nameEn: "Desserts",
+    items: [
+      { name: "Semifreddo Cioccolato Bianco e Mango", price: 5.0, glutenFree: true },
+      { name: "Semifreddo al Pistacchio", price: 3.5 },
+      { name: "Ferrero Rocher", price: 5.0, glutenFree: true },
+      { name: "Panna Cotta ai Frutti di Bosco", descriptionEn: "With mixed berries", price: 4.0 },
+      { name: "Profiteroles al Cioccolato", descriptionEn: "Chocolate profiteroles", price: 4.0 },
+      { name: "Tiramisù", price: 4.0 },
+      { name: "Panna Cotta al Caramello", price: 4.0 },
+      { name: "Cheesecake Caramello Salato", descriptionEn: "Salted caramel cheesecake", price: 4.0 },
+      { name: "Cheesecake ai Frutti di Bosco", descriptionEn: "Mixed berry cheesecake", price: 4.0 },
+      { name: "Semifreddo al Torroncino", descriptionEn: "Nougat semifreddo", price: 3.5 },
+      { name: "Cheesecake al Cioccolato", descriptionEn: "Chocolate cheesecake", price: 4.0 },
+      { name: "Gelato Tartufo Nero", descriptionEn: "Chocolate ice cream with a creamy heart", price: 3.5 },
+      { name: "Pastiera Napoletana", descriptionEn: "Neapolitan Easter-style tart", price: 4.0 },
+      { name: "Panna Cotta al Cioccolato", price: 4.0 },
+      { name: "Gelato Tartufo Bianco", descriptionEn: "Cream ice cream with a coffee heart", price: 3.5 },
+    ],
+  },
+  {
+    id: "bevande",
+    nameIt: "Bevande",
+    nameEn: "Soft Drinks",
+    items: [
+      { name: "Estathè Limone 33cl", descriptionEn: "Iced tea, lemon", price: 2.5 },
+      { name: "Estathè Pesca 33cl", descriptionEn: "Iced tea, peach", price: 2.5 },
+      { name: "Fanta 33cl (lattina)", price: 2.5 },
+      { name: "Sprite 33cl (lattina)", price: 2.5 },
+      { name: "Coca-Cola 33cl (lattina)", price: 2.5 },
+      { name: "Coca-Cola Zero 33cl (lattina)", price: 2.5 },
+      { name: "Fanta Orange 1,5L (bottiglia)", price: 4.5 },
+      { name: "Coca-Cola 1,5L (bottiglia)", price: 4.5 },
+      { name: "Acqua Frizzante 50cl", descriptionEn: "Sparkling water", price: 1.0 },
+      { name: "Acqua Naturale 50cl", descriptionEn: "Still water", price: 1.0 },
+    ],
+  },
+  {
+    id: "birre",
+    nameIt: "Birre",
+    nameEn: "Beer",
+    items: [
+      { name: "Heineken 33cl", price: 3.0 },
+      { name: "Moretti 33cl", price: 3.0 },
+      { name: "Heineken 66cl", price: 4.0 },
+      { name: "Moretti 66cl", price: 4.0 },
+      { name: "Peroni 66cl", price: 4.0 },
+    ],
+  },
+  {
+    id: "vino",
+    nameIt: "Vino (bottiglia 75cl)",
+    nameEn: "Wine (75cl bottle)",
+    items: [
+      { name: "Prosecco Cortize Spumante", price: 23.0 },
+      { name: "Falanghina", price: 15.0 },
+      { name: "Chianti Classico D.O.C.", price: 12.0 },
+      { name: "Greco di Tufo", price: 15.0 },
+      { name: "Pignoletto Classico D.O.C.", price: 11.0 },
+      { name: "Bologna Rosso", price: 11.0 },
+      { name: "Grillo Parlante", price: 13.0 },
+      { name: "Vermentino Gallura D.O.C.", price: 13.0 },
+      { name: "Prosecco Uso Spumante Brut", price: 10.0 },
+      { name: "Pignoletto Frizzante D.O.C.", price: 11.0 },
+      { name: "Nero d'Avola", price: 12.0 },
+      { name: "Lambrusco", price: 14.0 },
+      { name: "Pinot Grigio Grave D.O.C.", price: 11.0 },
+      { name: "Verdicchio", price: 14.0 },
+      { name: "Diano d'Avellino", price: 15.0 },
+      { name: "Sangiovese", price: 12.0 },
+    ],
+  },
+];
+
+/** A curated handful of dishes for the homepage preview strip. */
+export const menuHighlights = [
+  { categoryId: "pizze-speciali", itemName: "Amalfi" },
+  { categoryId: "pizze", itemName: "Diavola" },
+  { categoryId: "primi-di-mare", itemName: "Spaghetti allo Scoglio" },
+  { categoryId: "secondi-di-mare", itemName: "Branzino con Crema di Limone e Menta" },
+];

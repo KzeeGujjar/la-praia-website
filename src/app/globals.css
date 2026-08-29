@@ -1,26 +1,154 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-navy: #0e2a3d;
+  --color-navy-dark: #081a27;
+  --color-terracotta: #c1603a;
+  --color-terracotta-dark: #a34d2c;
+  --color-sand: #faf5ea;
+  --color-sand-dark: #efe4cd;
+  --color-lemon: #e7b93b;
+  --color-olive: #5f6f43;
+  --color-ink: #1b2530;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-navy: var(--color-navy);
+  --color-navy-dark: var(--color-navy-dark);
+  --color-terracotta: var(--color-terracotta);
+  --color-terracotta-dark: var(--color-terracotta-dark);
+  --color-sand: var(--color-sand);
+  --color-sand-dark: var(--color-sand-dark);
+  --color-lemon: var(--color-lemon);
+  --color-olive: var(--color-olive);
+  --color-ink: var(--color-ink);
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-sand);
+  color: var(--color-ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-display {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+}
+
+/* --- ThemeLab: live color-palette previews (see ThemeLab.tsx) --- */
+[data-theme="charcoal"] {
+  --color-navy: #262320;
+  --color-navy-dark: #17140f;
+  --color-terracotta: #b5572f;
+  --color-terracotta-dark: #96461f;
+  --color-sand: #f7f2e7;
+  --color-sand-dark: #ece3d1;
+  --color-lemon: #c99a3e;
+  --color-olive: #6b7245;
+  --color-ink: #211d19;
+}
+
+[data-theme="olive"] {
+  --color-navy: #23261c;
+  --color-navy-dark: #171911;
+  --color-terracotta: #bf7d35;
+  --color-terracotta-dark: #9c661f;
+  --color-sand: #f6f1e4;
+  --color-sand-dark: #eae2cd;
+  --color-lemon: #d1a34a;
+  --color-olive: #4f5d33;
+  --color-ink: #201d16;
+}
+
+[data-theme="wine"] {
+  --color-navy: #241417;
+  --color-navy-dark: #160c0e;
+  --color-terracotta: #a8452f;
+  --color-terracotta-dark: #86331f;
+  --color-sand: #f8f1e9;
+  --color-sand-dark: #ecdfd0;
+  --color-lemon: #c9a24a;
+  --color-olive: #6f6a45;
+  --color-ink: #211417;
+}
+
+/* --- ThemeLab: live font previews --- */
+[data-font-display="playfair"] {
+  --font-display: var(--font-playfair);
+}
+
+[data-font-display="cormorant"] {
+  --font-display: var(--font-cormorant);
+}
+
+[data-font-body="manrope"] {
+  --font-sans: var(--font-manrope);
+}
+
+/* Hero entrance animation */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-up-d1 {
+  animation-delay: 0.1s;
+}
+
+.animate-fade-up-d2 {
+  animation-delay: 0.22s;
+}
+
+.animate-fade-up-d3 {
+  animation-delay: 0.34s;
+}
+
+/* Scroll-triggered reveal, used by the Reveal component */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-fade-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
