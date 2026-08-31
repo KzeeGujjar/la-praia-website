@@ -21,6 +21,7 @@ npm run db:seed         # seed the DB from src/data/*.ts + bootstrap a super adm
 
 ## Structure & Conventions
 
+- **Route groups:** `src/app/(site)/` holds every public, bilingual page (home, about, contact, location, menu, reservation) plus its own layout (`Header`/`Footer`/`MobileActionBar`/`ChatWidget`/`LanguageProvider`/`ThemeLab`). `src/app/admin/` and `src/app/login/` are siblings of `(site)`, **not** inside it, specifically so the back-office UI never inherits the public site's chrome. The root `src/app/layout.tsx` is deliberately minimal (just `<html>/<body>` + fonts) — put public-site-only UI in `(site)/layout.tsx`, not there.
 - **All content is static data** in `src/data/business.ts` (address, phone, hours, delivery zones, Google Maps links) and `src/data/menu.ts` (full menu). Update these files for content changes — don't hardcode restaurant data inside components.
 - **Bilingual (IT default / EN)**: UI copy lives in `src/lib/i18n/dictionary.ts` as a single `dictionaries` object keyed by locale; components consume it via `useLanguage()` from `src/lib/language-context.tsx`. Menu item *names* stay in Italian in all locales (they're the real menu names); only descriptions/categories/UI chrome translate.
 - **No stock photography.** Use the `PhotoPlaceholder` component where real photos are pending rather than hotlinking stock images.
@@ -46,7 +47,8 @@ Postgres via Prisma (`prisma/schema.prisma`), intended for hosting on Supabase o
 - **Done — "Foundation":** the Prisma schema for all core entities (`User` with `Role` = `SUPER_ADMIN`/`MANAGER`/`STAFF`/`CUSTOMER`, `MenuCategory`/`MenuItem`, `BusinessHours`, `Reservation`, `Order`/`OrderItem`, `RefreshToken`); JWT-based auth (`src/lib/auth/`); and read-only APIs (`/api/menu`, `/api/business/hours`) that serve from the DB.
 - **Done — "Reservations":** `/reservation` is a real page (`src/app/reservation/page.tsx` + `src/components/ReservationForm.tsx`) that posts to `POST /api/reservations` (public — guest bookings are allowed; a logged-in customer's `userId` is attached automatically). Validates party size, a sane booking window (30 min–60 days out), and the requested time against `BusinessHours` in the DB (via `src/lib/rome-time.ts`, shared with the chat widget's own hours logic). The old "no online reservations" copy and the `#contact` anchor links for the "reserve" CTAs were updated accordingly; phone/WhatsApp remain as fallback channels for large parties or urgent requests.
 - **Done — "Menu + Reservation APIs":** full REST surface for both, detailed below.
-- **Not done yet:** an admin dashboard (nothing calls the admin endpoints below except manual testing), order-taking (menu → cart → `Order`) API and frontend, and the email/SMS/WhatsApp/image-upload integrations (Resend, Twilio, Cloudinary) those flows will eventually need. Don't assume any of these exist — check before referencing them.
+- **Done — "Admin dashboard":** `/login` (any role) and `/admin` (gated to `STAFF`/`MANAGER`/`SUPER_ADMIN` by `src/app/admin/layout.tsx`, redirects to `/login` otherwise) — see **Admin Dashboard** below.
+- **Not done yet:** order-taking (menu → cart → `Order`) API and frontend, and the email/SMS/WhatsApp/image-upload integrations (Resend, Twilio, Cloudinary) those flows will eventually need. Don't assume any of these exist — check before referencing them.
 - **Important split:** the live frontend still imports menu/hours content directly from `src/data/business.ts` / `src/data/menu.ts`, unchanged — it does **not** call any `/api/menu/*` route (reservations are the one exception: they're DB-native from the start, since there was no prior static equivalent to preserve). `prisma/seed.ts` copies the static menu/hours files *into* the DB so the DB and the static frontend start in sync, but editing the DB after seeding will not change what the menu/hours sections show until the frontend (or an admin flow) is wired to read from the DB instead. Don't assume editing a `MenuItem` row updates the live site.
 
 ### Menu API
@@ -72,6 +74,14 @@ Customer-facing (`src/lib/reservations.ts` has the shared validation/hours-check
 Staff-only (`STAFF`/`MANAGER`/`SUPER_ADMIN`), separate from the customer routes above:
 
 - `GET /api/admin/reservations` (filter by `?status=` or `?date=YYYY-MM-DD`), `PUT /api/admin/reservations/:id/status` (body `{ status }`, one of `PENDING`/`CONFIRMED`/`SEATED`/`COMPLETED`/`CANCELLED`/`NO_SHOW`).
+
+### Admin Dashboard
+
+- `src/app/login/page.tsx` is a single sign-in form for every role (not just staff — a `CUSTOMER` can use it too, it just redirects to `/` instead of `/admin`). It posts to the existing `/api/auth/login` and reads `role` back from that response to decide where to send the user.
+- `src/app/admin/layout.tsx` is the only access check: `requireRole("STAFF", "MANAGER", "SUPER_ADMIN")`, redirecting to `/login` on failure. Pages under `/admin/*` read straight from `prisma` as server components (no need to fetch their own API) and only call the `/api/admin/*` routes from client components for writes (create/update/delete), then `router.refresh()`.
+- `src/app/admin/menu/page.tsx` re-checks `MANAGER`/`SUPER_ADMIN` itself (rendering a "not allowed" message otherwise) since the nav only *hides* that link for `STAFF` — hiding a link is not access control, and the layout's check alone would let a `STAFF` user hit the page directly.
+- `src/components/admin/AdminNav.tsx` polls `POST /api/auth/refresh` every 10 minutes on a `setInterval` purely to stop the 15-minute access-token TTL from bouncing an actively-working staff member to `/login`. If you change that TTL, reconsider whether this is still needed.
+- No customer-facing account pages exist yet (no "my reservations" page, no registration form) — `/login` and `POST /api/auth/register` are the only pieces in place for the `CUSTOMER` role today.
 
 ### Auth
 

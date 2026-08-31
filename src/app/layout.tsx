@@ -7,13 +7,6 @@ import {
   Manrope,
 } from "next/font/google";
 import "./globals.css";
-import { LanguageProvider } from "@/lib/language-context";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { MobileActionBar } from "@/components/MobileActionBar";
-import { StructuredData } from "@/components/StructuredData";
-import { ThemeLab } from "@/components/ThemeLab";
-import { ChatWidget } from "@/components/ChatWidget";
 
 // Display/heading serif candidates, all loaded so ThemeLab can preview any
 // of them instantly — remove the two unused ones once a font is finalized.
@@ -78,23 +71,17 @@ export const metadata: Metadata = {
   },
 };
 
+// Deliberately minimal: the public site's chrome (Header/Footer/ChatWidget/
+// LanguageProvider) lives in src/app/(site)/layout.tsx instead, so the /admin
+// back-office section (a sibling route, not under (site)) doesn't inherit any
+// of it. Fonts stay here since the className is set on <html>, above both.
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="it"
       className={`${fraunces.variable} ${playfairDisplay.variable} ${cormorantGaramond.variable} ${inter.variable} ${manrope.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-sand text-ink">
-        <StructuredData />
-        <LanguageProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <MobileActionBar />
-          <ChatWidget />
-        </LanguageProvider>
-        <ThemeLab />
-      </body>
+      <body className="min-h-full bg-sand text-ink">{children}</body>
     </html>
   );
 }
