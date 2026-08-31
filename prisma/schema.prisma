@@ -1,0 +1,175 @@
+// Prisma schema for La Praia's backend (see CLAUDE.md's "Backend" section).
+// Run `npx prisma migrate dev` after setting DATABASE_URL to apply this.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  MANAGER
+  STAFF
+  CUSTOMER
+}
+
+enum Language {
+  IT
+  EN
+  ES
+  UR
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum FulfillmentType {
+  PICKUP
+  DELIVERY
+}
+
+model User {
+  id            String    @id @default(cuid())
+  firstName     String
+  lastName      String
+  email         String    @unique
+  phone         String?
+  passwordHash  String
+  role          Role      @default(CUSTOMER)
+  language      Language  @default(IT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  refreshTokens RefreshToken[]
+  reservations  Reservation[]
+  orders        Order[]
+}
+
+// Refresh tokens are stored hashed so a leaked DB row can't be replayed as a
+// live session; revokedAt lets logout/rotation invalidate a token server-side.
+model RefreshToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model MenuCategory {
+  id        String     @id
+  nameIt    String
+  nameEn    String
+  sortOrder Int        @default(0)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  items     MenuItem[]
+}
+
+model MenuItem {
+  id            String       @id @default(cuid())
+  categoryId    String
+  category      MenuCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name          String
+  descriptionIt String?
+  descriptionEn String?
+  price         Decimal      @db.Decimal(10, 2)
+  glutenFree    Boolean      @default(false)
+  imageUrl      String?
+  available     Boolean      @default(true)
+  sortOrder     Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  orderItems    OrderItem[]
+
+  @@index([categoryId])
+}
+
+// One row per day of the week (monday..sunday); null pickup/delivery means closed.
+model BusinessHours {
+  id       String  @id @default(cuid())
+  day      String  @unique
+  pickup   String?
+  delivery String?
+}
+
+model Reservation {
+  id            String            @id @default(cuid())
+  userId        String?
+  user          User?             @relation(fields: [userId], references: [id])
+  customerName  String
+  customerPhone String
+  customerEmail String?
+  partySize     Int
+  requestedFor  DateTime
+  status        ReservationStatus @default(PENDING)
+  language      Language          @default(IT)
+  notes         String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([userId])
+  @@index([requestedFor])
+}
+
+model Order {
+  id                 String          @id @default(cuid())
+  userId             String?
+  user               User?           @relation(fields: [userId], references: [id])
+  customerName       String
+  customerPhone      String
+  fulfillmentType    FulfillmentType
+  deliveryAddress    String?
+  deliveryPostalCode String?
+  requestedFor       DateTime?
+  status             OrderStatus     @default(PENDING)
+  subtotal           Decimal         @db.Decimal(10, 2)
+  deliveryFee        Decimal?        @db.Decimal(10, 2)
+  total              Decimal         @db.Decimal(10, 2)
+  paymentMethod      String          @default("cash")
+  language           Language        @default(IT)
+  notes              String?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  items              OrderItem[]
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id            String    @id @default(cuid())
+  orderId       String
+  order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItemId    String?
+  menuItem      MenuItem? @relation(fields: [menuItemId], references: [id])
+  // Snapshot the name/price at order time so later menu edits never rewrite history.
+  nameSnapshot  String
+  unitPrice     Decimal   @db.Decimal(10, 2)
+  quantity      Int
+  modifications String?
+
+  @@index([orderId])
+}
