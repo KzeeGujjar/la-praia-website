@@ -1,9 +1,10 @@
 import { business } from "@/data/business";
-import { menu } from "@/data/menu";
+import { menu as staticMenu } from "@/data/menu";
+import { prisma } from "@/lib/db";
 import { DAY_ORDER, getRomePartsAt, parseWindow } from "@/lib/rome-time";
 
-function formatMenu(): string {
-  return menu
+function formatStaticMenu(): string {
+  return staticMenu
     .map((category) => {
       const items = category.items
         .map((item) => {
@@ -15,6 +16,35 @@ function formatMenu(): string {
       return `${category.nameIt} / ${category.nameEn}:\n${items}`;
     })
     .join("\n\n");
+}
+
+// Queried live (not from src/data/menu.ts) so a price/availability change made
+// through the admin dashboard is reflected in the bot's next reply immediately.
+// Falls back to the static snapshot if the DB is unreachable, so a DB outage
+// degrades the bot to slightly-stale prices instead of breaking chat entirely.
+async function formatMenu(): Promise<string> {
+  try {
+    const categories = await prisma.menuCategory.findMany({
+      orderBy: { sortOrder: "asc" },
+      include: { items: { where: { available: true }, orderBy: { sortOrder: "asc" } } },
+    });
+
+    return categories
+      .map((category) => {
+        const items = category.items
+          .map((item) => {
+            const desc = item.descriptionIt ? ` — ${item.descriptionIt} (${item.descriptionEn ?? ""})` : "";
+            const gf = item.glutenFree ? " [senza glutine / gluten-free]" : "";
+            return `  - ${item.name}: ${Number(item.price).toFixed(2)}€${desc}${gf}`;
+          })
+          .join("\n");
+        return `${category.nameIt} / ${category.nameEn}:\n${items}`;
+      })
+      .join("\n\n");
+  } catch (err) {
+    console.error("Chat menu DB fetch failed, falling back to src/data/menu.ts:", err);
+    return formatStaticMenu();
+  }
 }
 
 function formatHours(): string {
@@ -57,7 +87,9 @@ function currentRomeStatus(): string {
  * customer a ready-to-send WhatsApp/phone message rather than claiming
  * the order is placed.
  */
-export function buildSystemPrompt(): string {
+export async function buildSystemPrompt(): Promise<string> {
+  const menuText = await formatMenu();
+
   return `You are the AI assistant for Ristorante Pizzeria La Praia, ${business.address.street}, ${business.address.city}, ${business.address.country}. You are embedded as a chat widget on the restaurant's own website.
 
 ## Language
@@ -81,7 +113,7 @@ Delivery postal codes: ${business.deliveryPostalCodes.join(", ")}. Payment is ca
 If the restaurant is currently closed, say so and give the next opening time before continuing — you can still help them plan an order for when it reopens.
 
 ## Menu
-${formatMenu()}
+${menuText}
 
 Only two desserts are confirmed gluten-free (marked above). For any other allergy or intolerance question, say the staff will confirm directly — never assert an item is allergen-safe on your own.
 

@@ -1,6 +1,7 @@
 import type { MenuCategory, MenuItem } from "@prisma/client";
+import type { PublicMenuCategory, PublicMenuItem } from "@/types/menu";
 
-export function serializeItem(item: MenuItem) {
+export function serializeItem(item: MenuItem): PublicMenuItem {
   return {
     id: item.id,
     categoryId: item.categoryId,
@@ -15,7 +16,7 @@ export function serializeItem(item: MenuItem) {
   };
 }
 
-export function serializeCategory(category: MenuCategory & { items?: MenuItem[] }) {
+export function serializeCategory(category: MenuCategory & { items?: MenuItem[] }): PublicMenuCategory {
   return {
     id: category.id,
     nameIt: category.nameIt,

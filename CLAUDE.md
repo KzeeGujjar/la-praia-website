@@ -4,7 +4,7 @@ Guidance for Claude Code when working in this repository.
 
 ## Project
 
-Website for **Ristorante Pizzeria La Praia** (Bologna). Next.js 16 (App Router) + Tailwind CSS v4 + TypeScript, with a Postgres/Prisma backend (see **Backend** below) for auth, roles, and future admin/reservations/orders features. The customer-facing frontend itself is still driven by the static files in `src/data/` — it does not yet read from the database (see **Backend** for the current split). No payments; no order backend for the public chat widget (see **AI Chat Widget**).
+Website for **Ristorante Pizzeria La Praia** (Bologna). Next.js 16 (App Router) + Tailwind CSS v4 + TypeScript, with a Postgres/Prisma backend (see **Backend** below) for auth, roles, and admin/reservations features. The public menu display and the chat widget's menu knowledge are both DB-first now (admin-editable, including photos), with the static files in `src/data/` kept only as a same-request fallback if the DB is unreachable and as the seed source — see **Backend**'s "Important split" for exactly what is and isn't DB-driven yet (business hours still aren't). No payments; no order backend for the public chat widget (see **AI Chat Widget**).
 
 ## Commands
 
@@ -22,9 +22,9 @@ npm run db:seed         # seed the DB from src/data/*.ts + bootstrap a super adm
 ## Structure & Conventions
 
 - **Route groups:** `src/app/(site)/` holds every public, bilingual page (home, about, contact, location, menu, reservation) plus its own layout (`Header`/`Footer`/`MobileActionBar`/`ChatWidget`/`LanguageProvider`/`ThemeLab`). `src/app/admin/` and `src/app/login/` are siblings of `(site)`, **not** inside it, specifically so the back-office UI never inherits the public site's chrome. The root `src/app/layout.tsx` is deliberately minimal (just `<html>/<body>` + fonts) — put public-site-only UI in `(site)/layout.tsx`, not there.
-- **All content is static data** in `src/data/business.ts` (address, phone, hours, delivery zones, Google Maps links) and `src/data/menu.ts` (full menu). Update these files for content changes — don't hardcode restaurant data inside components.
+- **Business info (address, phone, hours, delivery zones, Google Maps links) is still static data** in `src/data/business.ts` — update that file for those changes. `src/data/menu.ts` is no longer the live source for the menu (see **Backend**), but stays as the seed source and the DB-outage fallback, so keep it in sync if you're hand-editing menu content outside the admin dashboard.
 - **Bilingual (IT default / EN)**: UI copy lives in `src/lib/i18n/dictionary.ts` as a single `dictionaries` object keyed by locale; components consume it via `useLanguage()` from `src/lib/language-context.tsx`. Menu item *names* stay in Italian in all locales (they're the real menu names); only descriptions/categories/UI chrome translate.
-- **No stock photography.** Use the `PhotoPlaceholder` component where real photos are pending rather than hotlinking stock images.
+- **No stock photography.** Use the `PhotoPlaceholder` component where real photos are pending. Real menu item photos go through the admin dashboard's upload flow (Supabase Storage — see **Menu Images**), not hotlinked stock images.
 - **Contact/reservations** are `tel:` and `wa.me` links only (see `ContactButtons.tsx`) — there is intentionally no booking backend.
 - Tailwind v4: theme tokens (colors, fonts) are defined in `src/app/globals.css` via `@theme inline` — there is no `tailwind.config.js`.
 - Fonts: Fraunces (display/headings) + Inter (body), loaded via `next/font/google` in `src/app/layout.tsx`.
@@ -35,7 +35,7 @@ npm run db:seed         # seed the DB from src/data/*.ts + bootstrap a super adm
 
 - Requires `ANTHROPIC_API_KEY` set as a server-side env var on the hosting platform (see `.env.example`) — never commit a real key.
 - Requires a Node-capable host (e.g. Vercel). It will NOT work with a static export (`output: "export"` in `next.config.ts`) — the route handler needs a running server.
-- The system prompt (`src/lib/chat/system-prompt.ts`) is generated from `business.ts` and `menu.ts` at request time, so menu/hours edits there automatically flow into the bot — don't hardcode menu content in the prompt file.
+- The system prompt (`src/lib/chat/system-prompt.ts`) is built at request time: menu content is queried live from the DB (falling back to `menu.ts` if that query fails), hours still come from `business.ts` — don't hardcode menu content in the prompt file.
 - The bot converses in Italian, English, Spanish, and Urdu (auto-detected per message) — a wider set than the site's own IT/EN UI, which is unchanged. The chat widget's own chrome (buttons, placeholder, canned opening greeting) still follows the site's IT/EN language toggle; only the AI's replies range wider.
 - **The bot cannot place orders.** There's still no order backend, so it's instructed to always end an order by directing the customer to confirm it via the existing WhatsApp/phone channels (`ContactButtons.tsx`) — never to claim an order is submitted or confirmed. Preserve this behavior in any prompt edits; it's what keeps the "no booking backend" guarantee true for users.
 - This is a public, unauthenticated endpoint that spends real API credits per message — it has basic caps (message count/length, `max_tokens`) but no rate limiting or abuse protection. If this ships to production traffic, consider adding one (e.g. Vercel's rate limiting, or a WAF rule) before relying on it long-term.
@@ -48,8 +48,12 @@ Postgres via Prisma (`prisma/schema.prisma`), intended for hosting on Supabase o
 - **Done — "Reservations":** `/reservation` is a real page (`src/app/reservation/page.tsx` + `src/components/ReservationForm.tsx`) that posts to `POST /api/reservations` (public — guest bookings are allowed; a logged-in customer's `userId` is attached automatically). Validates party size, a sane booking window (30 min–60 days out), and the requested time against `BusinessHours` in the DB (via `src/lib/rome-time.ts`, shared with the chat widget's own hours logic). The old "no online reservations" copy and the `#contact` anchor links for the "reserve" CTAs were updated accordingly; phone/WhatsApp remain as fallback channels for large parties or urgent requests.
 - **Done — "Menu + Reservation APIs":** full REST surface for both, detailed below.
 - **Done — "Admin dashboard":** `/login` (any role) and `/admin` (gated to `STAFF`/`MANAGER`/`SUPER_ADMIN` by `src/app/admin/layout.tsx`, redirects to `/login` otherwise) — see **Admin Dashboard** below.
-- **Not done yet:** order-taking (menu → cart → `Order`) API and frontend, and the email/SMS/WhatsApp/image-upload integrations (Resend, Twilio, Cloudinary) those flows will eventually need. Don't assume any of these exist — check before referencing them.
-- **Important split:** the live frontend still imports menu/hours content directly from `src/data/business.ts` / `src/data/menu.ts`, unchanged — it does **not** call any `/api/menu/*` route (reservations are the one exception: they're DB-native from the start, since there was no prior static equivalent to preserve). `prisma/seed.ts` copies the static menu/hours files *into* the DB so the DB and the static frontend start in sync, but editing the DB after seeding will not change what the menu/hours sections show until the frontend (or an admin flow) is wired to read from the DB instead. Don't assume editing a `MenuItem` row updates the live site.
+- **Done — "Live menu + photos":** the public menu display, the homepage's featured-dishes strip, and the chat widget's menu knowledge all read from the DB now, and `/admin/menu` can attach a real photo to any item — see **Menu Images**.
+- **Not done yet:** order-taking (menu → cart → `Order`) API and frontend, and the email/SMS/WhatsApp integrations (Resend, Twilio) an order-confirmation flow would need. Don't assume either exists — check before referencing them.
+- **Important split — read this before touching menu or hours code:**
+  - **Menu is DB-first with a same-request static fallback.** `src/app/(site)/page.tsx` (`export const dynamic = "force-dynamic"` — deliberate, so `next build` never needs a live `DATABASE_URL`, and so admin edits show up without a redeploy) and `src/lib/chat/system-prompt.ts` both query Prisma directly and catch failures, falling back to `src/data/menu.ts` if the query throws (DB unset, outage, etc.) — see `loadMenu()`/`staticFallback()` in that page and `formatMenu()` in the prompt file. **If you add another place that renders menu content, give it the same try/catch-and-fall-back shape** — don't let a menu-display feature take down a page that used to work with zero backend dependency.
+  - **Business hours are still static-only**, in both the site and the chat bot — nothing reads `BusinessHours` from the DB except the reservation-hours check (`src/lib/reservations.ts`) and `/api/business/hours`. This is an intentional asymmetry from the menu, not an oversight; revisit if hours need to become admin-editable too.
+  - `prisma/seed.ts` copies `src/data/menu.ts`/`business.ts` *into* the DB so it starts in sync with what those files already shipped. After that, the DB (via `/admin/menu`) is the one to edit for menu changes — hand-editing `menu.ts` now only changes the seed/fallback snapshot, not the live site, unless the DB is unreachable.
 
 ### Menu API
 
@@ -63,6 +67,12 @@ Admin, gated to `MANAGER`/`SUPER_ADMIN` only — **not** `STAFF`, since front-of
 - `POST /api/admin/menu/items`, `PUT`/`DELETE /api/admin/menu/items/:id`. Deleting an item that's already in a past `Order` is safe: `OrderItem.menuItemId` is `SetNull` on delete, and `nameSnapshot`/`unitPrice` already preserve what was actually ordered.
 
 Validation for both lives in `src/lib/menu-admin.ts`.
+
+### Menu Images
+
+- `POST /api/admin/menu/items/:id/image` (`MANAGER`/`SUPER_ADMIN`, multipart `file` field, JPEG/PNG/WebP only, 5MB cap) uploads to Supabase Storage and sets that item's `imageUrl` in one step — `src/lib/storage.ts` does the upload, gated on `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` (service role, not the anon key — see `.env.example`) and a public bucket (`SUPABASE_STORAGE_BUCKET`, defaults to `menu-images`) that you have to create yourself in the Supabase dashboard. Until those are set, uploads fail with a 503 that the admin UI surfaces inline — everything else in the app works fine without them.
+- To clear a photo, `PUT /api/admin/menu/items/:id` with `{ imageUrl: null }` — no separate delete endpoint, and the old file is left in Storage rather than being cleaned up (acceptable orphaned-file tradeoff for now, not a correctness issue).
+- Rendered wherever a `MenuItem` shows up on the public site (`MenuItemRow`, the homepage's featured strip) via `next/image`; `next.config.ts` allow-lists `*.supabase.co/storage/v1/object/public/**` in `images.remotePatterns` — extend that if you switch image hosts.
 
 ### Reservation API
 
@@ -96,6 +106,7 @@ Staff-only (`STAFF`/`MANAGER`/`SUPER_ADMIN`), separate from the customer routes 
 2. Set `JWT_ACCESS_SECRET` (e.g. `openssl rand -base64 32`).
 3. `npm run prisma:migrate` to create the tables.
 4. Optionally set `SUPER_ADMIN_EMAIL`/`SUPER_ADMIN_PASSWORD`, then `npm run db:seed` to populate the menu/hours and bootstrap that admin account.
+5. Optionally, for menu photo uploads: create a public bucket in the same Supabase project's Storage tab, then set `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` (see **Menu Images**). Everything else works without this step.
 
 ### Known gap
 

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 type Item = {
   id: string;
@@ -11,6 +12,7 @@ type Item = {
   glutenFree: boolean;
   available: boolean;
   featured: boolean;
+  imageUrl: string | null;
 };
 
 type Category = {
@@ -74,6 +76,9 @@ function ItemRow({ item }: { item: Item }) {
   const router = useRouter();
   const [draft, setDraft] = useState(item);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const dirty = JSON.stringify(draft) !== JSON.stringify(item);
 
   async function save() {
@@ -99,8 +104,59 @@ function ItemRow({ item }: { item: Item }) {
     if (res.ok) router.refresh();
   }
 
+  async function uploadPhoto(file: File) {
+    setUploading(true);
+    setUploadError("");
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch(`/api/admin/menu/items/${item.id}/image`, { method: "POST", body: formData });
+    setUploading(false);
+    if (res.ok) {
+      router.refresh();
+    } else {
+      setUploadError(await res.text());
+    }
+  }
+
+  async function removePhoto() {
+    const res = await fetch(`/api/admin/menu/items/${item.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ imageUrl: null }),
+    });
+    if (res.ok) router.refresh();
+  }
+
   return (
     <div className="flex flex-wrap items-center gap-3 px-4 py-2.5 text-sm">
+      <div className="flex shrink-0 items-center gap-2">
+        {item.imageUrl ? (
+          <Image src={item.imageUrl} alt={item.name} width={40} height={40} className="h-10 w-10 rounded object-cover" />
+        ) : (
+          <div className="h-10 w-10 shrink-0 rounded border border-dashed border-navy/20 bg-sand-dark/20" />
+        )}
+        <div className="flex flex-col gap-0.5">
+          <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="text-[11px] font-semibold uppercase text-terracotta hover:text-terracotta-dark disabled:opacity-50">
+            {uploading ? "Uploading…" : item.imageUrl ? "Replace" : "Add Photo"}
+          </button>
+          {item.imageUrl && (
+            <button type="button" onClick={removePhoto} className="text-left text-[11px] text-ink/40 hover:text-terracotta">
+              Remove
+            </button>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) uploadPhoto(file);
+              e.target.value = "";
+            }}
+          />
+        </div>
+      </div>
       <input
         type="text"
         value={draft.name}
@@ -141,6 +197,7 @@ function ItemRow({ item }: { item: Item }) {
       <button type="button" onClick={remove} className="ml-auto text-xs text-ink/40 hover:text-terracotta">
         Delete
       </button>
+      {uploadError && <p className="w-full text-xs text-terracotta-dark">{uploadError}</p>}
     </div>
   );
 }

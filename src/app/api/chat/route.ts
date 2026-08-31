@@ -43,7 +43,7 @@ export async function POST(req: Request) {
   const stream = client.messages.stream({
     model: "claude-opus-5",
     max_tokens: 1024,
-    system: buildSystemPrompt(),
+    system: await buildSystemPrompt(),
     messages,
   });
 
