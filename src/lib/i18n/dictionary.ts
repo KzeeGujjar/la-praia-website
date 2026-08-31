@@ -118,6 +118,18 @@ export const dictionaries = {
       skipToContent: "Vai al contenuto",
       country: "Italia",
     },
+    chat: {
+      bubbleLabel: "Chatta con noi",
+      title: "Assistente La Praia",
+      greeting:
+        "Ciao! Posso aiutarti con il menù, gli orari o a preparare un ordine da confermare su WhatsApp. Come posso aiutarti?",
+      placeholder: "Scrivi un messaggio…",
+      sendLabel: "Invia",
+      closeLabel: "Chiudi chat",
+      disclaimer:
+        "Assistente automatico — non gestiamo ordini online: per confermare, scrivici su WhatsApp o chiama.",
+      errorMessage: "Qualcosa è andato storto. Riprova o scrivici su WhatsApp.",
+    },
   },
   en: {
     nav: {
@@ -230,6 +242,18 @@ export const dictionaries = {
       languageToggleLabel: "Language",
       skipToContent: "Skip to content",
       country: "Italy",
+    },
+    chat: {
+      bubbleLabel: "Chat with us",
+      title: "La Praia Assistant",
+      greeting:
+        "Hi! I can help with the menu, hours, or putting together an order to confirm on WhatsApp. How can I help?",
+      placeholder: "Type a message…",
+      sendLabel: "Send",
+      closeLabel: "Close chat",
+      disclaimer:
+        "Automated assistant — we don't handle orders online: to confirm, message us on WhatsApp or call.",
+      errorMessage: "Something went wrong. Try again or message us on WhatsApp.",
     },
   },
 } as const;

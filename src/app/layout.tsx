@@ -13,6 +13,7 @@ import { Footer } from "@/components/Footer";
 import { MobileActionBar } from "@/components/MobileActionBar";
 import { StructuredData } from "@/components/StructuredData";
 import { ThemeLab } from "@/components/ThemeLab";
+import { ChatWidget } from "@/components/ChatWidget";
 
 // Display/heading serif candidates, all loaded so ThemeLab can preview any
 // of them instantly — remove the two unused ones once a font is finalized.
@@ -90,6 +91,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <main className="flex-1">{children}</main>
           <Footer />
           <MobileActionBar />
+          <ChatWidget />
         </LanguageProvider>
         <ThemeLab />
       </body>
