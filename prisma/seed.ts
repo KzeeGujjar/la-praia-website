@@ -4,7 +4,7 @@
 // menu/business upserts are idempotent; the super admin is only created once.
 import { PrismaClient } from "@prisma/client";
 import { business } from "../src/data/business";
-import { menu } from "../src/data/menu";
+import { menu, menuHighlights } from "../src/data/menu";
 import { hashPassword } from "../src/lib/auth/password";
 
 const prisma = new PrismaClient();
@@ -21,6 +21,7 @@ async function seedMenu() {
       const existing = await prisma.menuItem.findFirst({
         where: { categoryId: category.id, name: item.name },
       });
+      const featured = menuHighlights.some((h) => h.categoryId === category.id && h.itemName === item.name);
       const data = {
         categoryId: category.id,
         name: item.name,
@@ -28,6 +29,7 @@ async function seedMenu() {
         descriptionEn: item.descriptionEn ?? null,
         price: item.price,
         glutenFree: item.glutenFree ?? false,
+        featured,
         sortOrder: itemIndex,
       };
       if (existing) {

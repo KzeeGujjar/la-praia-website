@@ -27,8 +27,10 @@ enum Language {
 enum ReservationStatus {
   PENDING
   CONFIRMED
-  CANCELLED
+  SEATED
   COMPLETED
+  CANCELLED
+  NO_SHOW
 }
 
 enum OrderStatus {
@@ -98,6 +100,7 @@ model MenuItem {
   glutenFree    Boolean      @default(false)
   imageUrl      String?
   available     Boolean      @default(true)
+  featured      Boolean      @default(false)
   sortOrder     Int          @default(0)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
@@ -116,19 +119,24 @@ model BusinessHours {
 }
 
 model Reservation {
-  id            String            @id @default(cuid())
-  userId        String?
-  user          User?             @relation(fields: [userId], references: [id])
-  customerName  String
-  customerPhone String
-  customerEmail String?
-  partySize     Int
-  requestedFor  DateTime
-  status        ReservationStatus @default(PENDING)
-  language      Language          @default(IT)
-  notes         String?
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
+  id               String            @id @default(cuid())
+  userId           String?
+  user             User?             @relation(fields: [userId], references: [id])
+  customerName     String
+  customerPhone    String
+  customerEmail    String?
+  partySize        Int
+  requestedFor     DateTime
+  status           ReservationStatus @default(PENDING)
+  // The customer's preferred language for staff to follow up in (site UI is IT/EN only).
+  language         Language          @default(IT)
+  notes            String?
+  allergies        String?
+  // Given back to the customer on creation so they can look up/cancel a
+  // guest reservation later without needing an account (see /api/reservations/[id]).
+  confirmationCode String            @unique
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 
   @@index([userId])
   @@index([requestedFor])
@@ -164,7 +172,10 @@ model OrderItem {
   orderId       String
   order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
   menuItemId    String?
-  menuItem      MenuItem? @relation(fields: [menuItemId], references: [id])
+  // SetNull (not the FK default of Restrict) so deleting a discontinued menu
+  // item never fails or rewrites past orders — nameSnapshot/unitPrice already
+  // preserve what was actually ordered.
+  menuItem      MenuItem? @relation(fields: [menuItemId], references: [id], onDelete: SetNull)
   // Snapshot the name/price at order time so later menu edits never rewrite history.
   nameSnapshot  String
   unitPrice     Decimal   @db.Decimal(10, 2)

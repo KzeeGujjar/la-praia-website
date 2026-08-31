@@ -10,6 +10,7 @@ export function ReservationForm() {
   const { t, locale } = useLanguage();
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [confirmationCode, setConfirmationCode] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -28,6 +29,7 @@ export function ReservationForm() {
       partySize: Number(data.get("partySize")),
       requestedFor,
       notes: String(data.get("notes") ?? "") || undefined,
+      allergies: String(data.get("allergies") ?? "") || undefined,
       language: locale,
     };
 
@@ -45,6 +47,8 @@ export function ReservationForm() {
       }
       if (!res.ok) throw new Error("Request failed");
 
+      const result = await res.json();
+      setConfirmationCode(result.confirmationCode ?? "");
       setStatus("success");
       form.reset();
     } catch {
@@ -58,6 +62,17 @@ export function ReservationForm() {
       <div className="border border-navy/15 bg-white px-6 py-8 text-center">
         <h3 className="font-display text-2xl font-semibold text-navy">{t.reservation.successTitle}</h3>
         <p className="mt-2 text-sm text-ink/70">{t.reservation.successBody}</p>
+        {confirmationCode && (
+          <div className="mx-auto mt-5 max-w-xs border border-navy/15 bg-sand-dark/40 px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-navy/70">
+              {t.reservation.confirmationCodeLabel}
+            </p>
+            <p className="mt-1 font-display text-2xl font-semibold tracking-widest text-terracotta">
+              {confirmationCode}
+            </p>
+            <p className="mt-1 text-xs text-ink/60">{t.reservation.confirmationCodeNote}</p>
+          </div>
+        )}
         <button
           type="button"
           onClick={() => setStatus("idle")}
@@ -91,6 +106,10 @@ export function ReservationForm() {
 
       <Field label={t.reservation.dateLabel}>
         <input name="requestedFor" type="datetime-local" required className={inputClasses} />
+      </Field>
+
+      <Field label={t.reservation.allergiesLabel}>
+        <input name="allergies" type="text" maxLength={500} className={inputClasses} />
       </Field>
 
       <Field label={t.reservation.notesLabel}>

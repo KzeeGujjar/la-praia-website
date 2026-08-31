@@ -44,9 +44,34 @@ npm run db:seed         # seed the DB from src/data/*.ts + bootstrap a super adm
 Postgres via Prisma (`prisma/schema.prisma`), intended for hosting on Supabase or Neon. This is being built incrementally — treat the state below as current, not aspirational, and update this section as each phase lands:
 
 - **Done — "Foundation":** the Prisma schema for all core entities (`User` with `Role` = `SUPER_ADMIN`/`MANAGER`/`STAFF`/`CUSTOMER`, `MenuCategory`/`MenuItem`, `BusinessHours`, `Reservation`, `Order`/`OrderItem`, `RefreshToken`); JWT-based auth (`src/lib/auth/`); and read-only APIs (`/api/menu`, `/api/business/hours`) that serve from the DB.
-- **Done — "Reservations":** `/reservation` is a real page (`src/app/reservation/page.tsx` + `src/components/ReservationForm.tsx`) that posts to `POST /api/reservations` (public — guest bookings are allowed; a logged-in customer's `userId` is attached automatically). Validates party size, a sane booking window (30 min–60 days out), and the requested time against `BusinessHours` in the DB (via `src/lib/rome-time.ts`, shared with the chat widget's own hours logic). `GET /api/reservations` is staff-only (`STAFF`/`MANAGER`/`SUPER_ADMIN`) for listing/filtering by status — there's no admin UI to call it from yet. The old "no online reservations" copy and the `#contact` anchor links for the "reserve" CTAs were updated accordingly; phone/WhatsApp remain as fallback channels for large parties or urgent requests.
-- **Not done yet:** an admin dashboard, order-taking (menu → cart → `Order`) API and frontend, updating a reservation's status (confirm/cancel) anywhere but directly in the DB, and the email/SMS/WhatsApp/image-upload integrations (Resend, Twilio, Cloudinary) those flows will eventually need. Don't assume any of these exist — check before referencing them.
-- **Important split:** the live frontend still imports menu/hours content directly from `src/data/business.ts` / `src/data/menu.ts`, unchanged — it does **not** call `/api/menu` or `/api/business/hours` (reservations are the one exception: they're DB-native from the start, since there was no prior static equivalent to preserve). `prisma/seed.ts` copies the static menu/hours files *into* the DB so the DB and the static frontend start in sync, but editing the DB after seeding will not change what the menu/hours sections show until the frontend (or an admin flow) is wired to read from the DB instead. Don't assume editing a `MenuItem` row updates the live site.
+- **Done — "Reservations":** `/reservation` is a real page (`src/app/reservation/page.tsx` + `src/components/ReservationForm.tsx`) that posts to `POST /api/reservations` (public — guest bookings are allowed; a logged-in customer's `userId` is attached automatically). Validates party size, a sane booking window (30 min–60 days out), and the requested time against `BusinessHours` in the DB (via `src/lib/rome-time.ts`, shared with the chat widget's own hours logic). The old "no online reservations" copy and the `#contact` anchor links for the "reserve" CTAs were updated accordingly; phone/WhatsApp remain as fallback channels for large parties or urgent requests.
+- **Done — "Menu + Reservation APIs":** full REST surface for both, detailed below.
+- **Not done yet:** an admin dashboard (nothing calls the admin endpoints below except manual testing), order-taking (menu → cart → `Order`) API and frontend, and the email/SMS/WhatsApp/image-upload integrations (Resend, Twilio, Cloudinary) those flows will eventually need. Don't assume any of these exist — check before referencing them.
+- **Important split:** the live frontend still imports menu/hours content directly from `src/data/business.ts` / `src/data/menu.ts`, unchanged — it does **not** call any `/api/menu/*` route (reservations are the one exception: they're DB-native from the start, since there was no prior static equivalent to preserve). `prisma/seed.ts` copies the static menu/hours files *into* the DB so the DB and the static frontend start in sync, but editing the DB after seeding will not change what the menu/hours sections show until the frontend (or an admin flow) is wired to read from the DB instead. Don't assume editing a `MenuItem` row updates the live site.
+
+### Menu API
+
+Public, read-only, all served from the DB (`src/lib/menu-serialize.ts` for the shared JSON shape) — only `available: true` items/categories are ever returned:
+
+- `GET /api/menu/categories`, `GET /api/menu/items`, `GET /api/menu/items/:id`, `GET /api/menu/category/:slug` (`:slug` is the category's `id`, e.g. `pizze`), `GET /api/menu/search?q=`, `GET /api/menu/featured` (`MenuItem.featured`, seeded from `menuHighlights` in `src/data/menu.ts`).
+
+Admin, gated to `MANAGER`/`SUPER_ADMIN` only — **not** `STAFF`, since front-of-house staff shouldn't be able to change prices or delete items (revisit if that's wrong for how the restaurant actually wants to divide this up):
+
+- `POST /api/admin/menu/categories`, `PUT`/`DELETE /api/admin/menu/categories/:id` (delete cascades to that category's items — see schema).
+- `POST /api/admin/menu/items`, `PUT`/`DELETE /api/admin/menu/items/:id`. Deleting an item that's already in a past `Order` is safe: `OrderItem.menuItemId` is `SetNull` on delete, and `nameSnapshot`/`unitPrice` already preserve what was actually ordered.
+
+Validation for both lives in `src/lib/menu-admin.ts`.
+
+### Reservation API
+
+Customer-facing (`src/lib/reservations.ts` has the shared validation/hours-check):
+
+- `POST /api/reservations` — public. Returns a `confirmationCode` (8 chars, ambiguous characters excluded) the guest needs to look up or change the booking later, since there's no login requirement.
+- `GET /api/reservations/:id?code=...`, `PUT /api/reservations/:id` (body needs `confirmationCode`), `DELETE /api/reservations/:id?code=...` — a matching `confirmationCode` **or** a staff session authorizes these; anyone else gets 403. `PUT` only works while `status` is still `PENDING` (once staff have touched it, further changes go through staff); `DELETE` sets `status: CANCELLED` rather than removing the row, so the confirmation code and history keep working.
+
+Staff-only (`STAFF`/`MANAGER`/`SUPER_ADMIN`), separate from the customer routes above:
+
+- `GET /api/admin/reservations` (filter by `?status=` or `?date=YYYY-MM-DD`), `PUT /api/admin/reservations/:id/status` (body `{ status }`, one of `PENDING`/`CONFIRMED`/`SEATED`/`COMPLETED`/`CANCELLED`/`NO_SHOW`).
 
 ### Auth
 
