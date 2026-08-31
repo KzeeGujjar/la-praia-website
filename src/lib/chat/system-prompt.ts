@@ -1,15 +1,6 @@
 import { business } from "@/data/business";
 import { menu } from "@/data/menu";
-
-const DAY_ORDER = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday",
-] as const;
+import { DAY_ORDER, getRomePartsAt, parseWindow } from "@/lib/rome-time";
 
 function formatMenu(): string {
   return menu
@@ -33,35 +24,20 @@ function formatHours(): string {
 }
 
 function currentRomeStatus(): string {
-  const now = new Date();
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: "Europe/Rome",
-    weekday: "long",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).formatToParts(now);
-
-  const weekday = parts.find((p) => p.type === "weekday")?.value.toLowerCase() ?? "";
-  const hour = Number(parts.find((p) => p.type === "hour")?.value ?? "0");
-  const minute = Number(parts.find((p) => p.type === "minute")?.value ?? "0");
-  const nowMinutes = hour * 60 + minute;
+  const { weekday, hour, minute, minutesOfDay } = getRomePartsAt(new Date());
 
   const today = business.hours.find((h) => h.day === weekday);
   const isOpen =
     !!today?.pickup &&
     (() => {
-      const [start, end] = today.pickup!.split("–").map((t) => {
-        const [h2, m2] = t.split(":").map(Number);
-        return h2 * 60 + m2;
-      });
-      return nowMinutes >= start && nowMinutes <= end;
+      const [start, end] = parseWindow(today.pickup!);
+      return minutesOfDay >= start && minutesOfDay <= end;
     })();
 
   const nextOpenDay = (() => {
     if (isOpen) return null;
     for (let i = 1; i <= 7; i++) {
-      const idx = (DAY_ORDER.indexOf(weekday as (typeof DAY_ORDER)[number]) + i) % 7;
+      const idx = (DAY_ORDER.indexOf(weekday) + i) % 7;
       const day = DAY_ORDER[idx];
       const entry = business.hours.find((h) => h.day === day);
       if (entry?.pickup) return `${day} at ${entry.pickup.split("–")[0]}`;

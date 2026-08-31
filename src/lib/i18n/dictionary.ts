@@ -75,7 +75,7 @@ export const dictionaries = {
       eyebrow: "Prenotazioni",
       title: "Vieni a Trovarci",
       subtitle:
-        "Non gestiamo prenotazioni online: chiamaci o scrivici su WhatsApp e ti confermiamo subito la disponibilità.",
+        "Prenota online oppure chiamaci o scrivici su WhatsApp: ti confermiamo subito la disponibilità.",
       callCta: "Chiama Ora",
       whatsappCta: "Scrivi su WhatsApp",
       hoursTitle: "Orari di Apertura",
@@ -100,6 +100,28 @@ export const dictionaries = {
       title: "La Nostra Sede",
       subtitle:
         "Ci trovi in Via Camillo Casarini 10, nel quartiere Bolognina a Bologna.",
+    },
+    reservation: {
+      eyebrow: "Prenota Online",
+      title: "Prenota un Tavolo",
+      subtitle:
+        "Compila il modulo e ti confermeremo la disponibilità. Per gruppi numerosi o richieste urgenti, chiamaci direttamente.",
+      onlineNote: "Puoi anche prenotare online",
+      nameLabel: "Nome e cognome",
+      phoneLabel: "Telefono",
+      emailLabel: "Email (facoltativa)",
+      partySizeLabel: "Numero di persone",
+      dateLabel: "Data e ora",
+      notesLabel: "Richieste particolari (facoltativo)",
+      submitLabel: "Invia richiesta",
+      submittingLabel: "Invio in corso…",
+      successTitle: "Richiesta inviata!",
+      successBody:
+        "Ti contatteremo al più presto per confermare. Per qualsiasi urgenza, chiamaci o scrivici su WhatsApp.",
+      newRequestCta: "Invia un'altra richiesta",
+      errorOutsideHours: "L'orario scelto è fuori dagli orari di apertura. Scegli un altro orario.",
+      errorGeneric: "Qualcosa è andato storto. Riprova o contattaci telefonicamente.",
+      largePartyNote: "Per gruppi di oltre 20 persone, chiamaci direttamente.",
     },
     footer: {
       typeLabel: "Ristorante Pizzeria Italiana",
@@ -200,7 +222,7 @@ export const dictionaries = {
       eyebrow: "Reservations",
       title: "Come Visit Us",
       subtitle:
-        "We don't take reservations online: call us or message us on WhatsApp and we'll confirm availability right away.",
+        "Book online, or call us or message us on WhatsApp — we'll confirm availability right away.",
       callCta: "Call Now",
       whatsappCta: "Message on WhatsApp",
       hoursTitle: "Opening Hours",
@@ -225,6 +247,28 @@ export const dictionaries = {
       title: "Find Us",
       subtitle:
         "You'll find us at Via Camillo Casarini 10, in the Bolognina district of Bologna.",
+    },
+    reservation: {
+      eyebrow: "Book Online",
+      title: "Reserve a Table",
+      subtitle:
+        "Fill in the form and we'll confirm availability. For large groups or urgent requests, please call us directly.",
+      onlineNote: "You can also book online",
+      nameLabel: "Full name",
+      phoneLabel: "Phone",
+      emailLabel: "Email (optional)",
+      partySizeLabel: "Party size",
+      dateLabel: "Date and time",
+      notesLabel: "Special requests (optional)",
+      submitLabel: "Send request",
+      submittingLabel: "Sending…",
+      successTitle: "Request sent!",
+      successBody:
+        "We'll be in touch shortly to confirm. For anything urgent, call us or message us on WhatsApp.",
+      newRequestCta: "Send another request",
+      errorOutsideHours: "That time is outside our opening hours. Please choose another time.",
+      errorGeneric: "Something went wrong. Please try again or contact us by phone.",
+      largePartyNote: "For parties larger than 20, please call us directly.",
     },
     footer: {
       typeLabel: "Italian Restaurant & Pizzeria",

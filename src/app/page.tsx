@@ -47,7 +47,7 @@ export default function Home() {
           </p>
           <div className="animate-fade-up animate-fade-up-d3 flex flex-wrap gap-4 pt-3">
             <a
-              href="#contact"
+              href="/reservation"
               className="inline-flex items-center justify-center bg-lemon px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-navy-dark transition-colors duration-300 hover:bg-lemon/90"
             >
               {t.hero.ctaContact}
@@ -300,6 +300,13 @@ export default function Home() {
             {t.contact.subtitle}
           </p>
           <ContactButtons className="mt-6" variant="dark" />
+          <a
+            href="/reservation"
+            className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-lemon hover:text-lemon/80"
+          >
+            {t.reservation.onlineNote}
+            <span aria-hidden="true">→</span>
+          </a>
 
           <div className="mt-14 grid gap-10 sm:grid-cols-2">
             <div>

@@ -72,7 +72,7 @@ export function Header() {
         <div className="hidden items-center gap-3 md:flex">
           <LanguageToggle />
           <a
-            href="#contact"
+            href="/reservation"
             className="inline-flex items-center bg-terracotta px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] text-sand transition-colors hover:bg-terracotta-dark"
           >
             {t.nav.reserve}
@@ -124,7 +124,7 @@ export function Header() {
           <div className="mt-3 flex items-center justify-between gap-3">
             <LanguageToggle />
             <a
-              href="#contact"
+              href="/reservation"
               onClick={() => setOpen(false)}
               className="inline-flex items-center bg-terracotta px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] text-sand"
             >
